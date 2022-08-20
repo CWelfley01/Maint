@@ -19,17 +19,17 @@ CORS(app)
 class MaintRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     datein = db.Column(db.String, nullable=False)
-    datestarted = db.Column(db.String, nullable=False)
-    datecompleted = db.Column(db.String, nullable=False)
+    started = db.Column(db.String, nullable=False)
+    completed = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
     actiontaken = db.Column(db.String, nullable=False)
     tech = db.Column(db.String, nullable=False)
     
 
-    def __init__(self, datein, datestarted, datecompleted, description, actiontaken, tech):
+    def __init__(self, datein, started, completed, description, actiontaken, tech):
         self.datein = datein
-        self.datestarted = datestarted
-        self.datecompleted = datecompleted 
+        self.started = started
+        self.completed = completed 
         self.description = description
         self.actiontaken = actiontaken
         self.tech = tech
@@ -37,7 +37,7 @@ class MaintRecord(db.Model):
 
 class MaintRecordSchema(ma.Schema):
     class Meta:
-        fields = ("id", "datein", "datestarted", "datecompleted", "description", "actiontaken", "tech")
+        fields = ("id", "datein", "started", "completed", "description", "actiontaken", "tech")
 
 maintrecord_schema = MaintRecordSchema()
 maintrecords_schema = MaintRecordSchema(many=True)
@@ -45,14 +45,14 @@ maintrecords_schema = MaintRecordSchema(many=True)
 @app.route("/add-record", methods=["POST"])
 def add_record():
     datein = request.json.get("datein")
-    datestarted = request.json.get("datestarted")
-    datecompleted = request.json.get("datecompleted")
+    started = request.json.get("started")
+    completed = request.json.get("completed")
     description = request.json.get("description")
     actiontaken = request.json.get("actiontaken")
     tech = request.json.get("tech")
     
 
-    record = MaintRecords(datein, datestarted, datecompleted, description, actiontaken, tech)
+    record = MaintRecords(datein, started, completed, description, actiontaken, tech)
     
     db.session.add(record)
     db.session.commit()
@@ -74,16 +74,16 @@ def maintrecord_id(id):
         return maintrecord_schema.jsonify(maintrecord)
     elif request.method == "PUT":
         datein = request.json['datein']
-        datestarted = request.json['datestarted']
-        datecompleted = request.json['datecompleted']
+        started = request.json['started']
+        completed = request.json['completed']
         description = request.json['description']
         actiontaken = request.json['actiontaken']
         tech = request.json['tech']
        
 
         maintrecord.datein = datein
-        maintrecord.datestarted = datestarted
-        maintrecord.datecompleted = datecompleted
+        maintrecord.started = started
+        maintrecord.completed = completed
         maintrecord.description = description
         maintrecord.actiontaken = actiontaken
         maintrecord.tech = tech
