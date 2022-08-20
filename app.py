@@ -15,6 +15,7 @@ ma = Marshmallow(app)
 
 CORS(app)
 
+# maint table
 
 class MaintRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,17 +43,48 @@ class MaintRecordSchema(ma.Schema):
 maintrecord_schema = MaintRecordSchema()
 maintrecords_schema = MaintRecordSchema(many=True)
 
-@app.route("/add-record", methods=["POST"])
-def add_record():
-    datein = request.json.get("datein")
-    started = request.json.get("started")
-    completed = request.json.get("completed")
+# forklift table
+
+class ForkliftRecord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    designation = db.Column(db.String, nullable=False)
+    model = db.Column(db.String, nullable=False)
+    serial = db.Column(db.String, nullable=False)
+    nickname = db.Column(db.String, nullable=False)
+    fuel = db.Column(db.String, nullable=False)
+    engine = db.Column(db.String, nullable=False)
+    
+
+    def __init__(self, designation, model, serial, nickname, fuel, engine):
+        self.designation = designation
+        self.model = model
+        self.serial = serial 
+        self.nickname = nickname
+        self.fuel = fuel
+        self.engine = engine
+        
+
+class ForkliftRecordSchema(ma.Schema):
+    class Meta:
+        fields = ("id", "designation", "model", "serial", "nickname", "actiontaken", "engine")
+
+forkliftrecord_schema = ForkliftRecordSchema()
+forkliftrecords_schema = ForkliftRecordSchema(many=True)
+
+
+# routes
+
+@app.route("/add-maintrecord", methods=["POST"])
+def add_maintrecord():
+    designation = request.json.get("designation")
+    model = request.json.get("model")
+    serial = request.json.get("serial")
     description = request.json.get("description")
     actiontaken = request.json.get("actiontaken")
     tech = request.json.get("tech")
     
 
-    record = MaintRecords(datein, started, completed, description, actiontaken, tech)
+    record = MaintRecords(designation, model, serial, description, actiontaken, tech)
     
     db.session.add(record)
     db.session.commit()
