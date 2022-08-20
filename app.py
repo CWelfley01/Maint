@@ -16,12 +16,14 @@ ma = Marshmallow(app)
 CORS(app)
 
 
-class Books(db.Model):
+class MaintRecord(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    author = db.Column(db.String, nullable=False)
-    price = db.Column(db.Float, nullable=False)
+    datein = db.Column(db.String, nullable=False)
+    datestarted = db.Column(db.String, nullable=False)
+    datecompleted = db.Column(db.String, nullable=False)
     description = db.Column(db.String, nullable=False)
+    actiontaken = db.Column(db.String, nullable=False)
+    tech = db.Column(db.String, nullable=False)
     
 
     def __init__(self, name, price, author, description):
