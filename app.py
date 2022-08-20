@@ -26,64 +26,72 @@ class MaintRecord(db.Model):
     tech = db.Column(db.String, nullable=False)
     
 
-    def __init__(self, name, price, author, description):
-        self.name = name
-        self.price = price
-        self.author = author
+    def __init__(self, datein, datestarted, datecompleted, description, actiontaken, tech):
+        self.datein = datein
+        self.datestarted = datestarted
+        self.datecompleted = datecompleted 
         self.description = description
+        self.actiontaken = actiontaken
+        self.tech = tech
         
 
-class BookSchema(ma.Schema):
+class MaintRecordSchema(ma.Schema):
     class Meta:
-        fields = ("id", "name", "price", "author", "description")
+        fields = ("id", "datein", "datestarted", "datecompleted", "description", "actiontaken", "tech")
 
-book_schema = BookSchema()
-books_schema = BookSchema(many=True)
+maintrecord_schema = MaintRecordSchema()
+maintrecords_schema = MaintRecordSchema(many=True)
 
-@app.route("/add-book", methods=["POST"])
-def add_book():
-    name = request.json.get("name")
-    author = request.json.get("author")
+@app.route("/add-record", methods=["POST"])
+def add_record():
+    datein = request.json.get("datein")
+    datestarted = request.json.get("datestarted")
+    datecompleted = request.json.get("datecompleted")
     description = request.json.get("description")
-    price = request.json.get("price")
+    actiontaken = request.json.get("actiontaken")
+    tech = request.json.get("tech")
     
 
-    record = Books(name, price, author, description)
+    record = MaintRecords(datein, datestarted, datecompleted, description, actiontaken, tech)
     
     db.session.add(record)
     db.session.commit()
 
-    return jsonify(book_schema.dump(record))
+    return jsonify(maintrecord_schema.dump(record))
 
-@app.route("/books", methods=["GET"])
-def get_all_books():
-    all_books = Books.query.all()
-    return jsonify(books_schema.dump(all_books))
+@app.route("/maintrecords", methods=["GET"])
+def get_all_maintrecords():
+    all_maintrecords = maintrecords.query.all()
+    return jsonify(maintrecords_schema.dump(all_maintrecords))
 
-@app.route("/book/<id>", methods=["DELETE","GET","PUT"])
-def book_id(id):
-    book = Books.query.get(id)
+@app.route("/maintrecord/<id>", methods=["DELETE","GET","PUT"])
+def maintrecord_id(id):
+    maintrecord = MaintRecords.query.get(id)
     if request.method == "DELETE":
-        db.session.delete(book)
+        db.session.delete(maintrecord)
         db.session.commit()
     
-        return book_schema.jsonify(book)
+        return maintrecord_schema.jsonify(maintrecord)
     elif request.method == "PUT":
-        name = request.json['name']
-        author = request.json['author']
-        price = request.json['price']
+        datein = request.json['datein']
+        datestarted = request.json['datestarted']
+        datecompleted = request.json['datecompleted']
         description = request.json['description']
+        actiontaken = request.json['actiontaken']
+        tech = request.json['tech']
        
 
-        book.name = name
-        book.author = author
-        book.price = price
-        book.description = description
+        maintrecord.datein = datein
+        maintrecord.datestarted = datestarted
+        maintrecord.datecompleted = datecompleted
+        maintrecord.description = description
+        maintrecord.actiontaken = actiontaken
+        maintrecord.tech = tech
 
         db.session.commit()
-        return book_schema.jsonify(book)
+        return maintrecord_schema.jsonify(maintrecord)
     elif request.method == "GET":
-        return book_schema.jsonify(book)
+        return maintrecord_schema.jsonify(maintrecord)
 
 
 
