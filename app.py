@@ -66,7 +66,7 @@ class ForkliftRecord(db.Model):
 
 class ForkliftRecordSchema(ma.Schema):
     class Meta:
-        fields = ("id", "designation", "model", "serial", "nickname", "actiontaken", "engine")
+        fields = ("id", "designation", "model", "serial", "nickname", "fuel", "engine")
 
 forkliftrecord_schema = ForkliftRecordSchema()
 forkliftrecords_schema = ForkliftRecordSchema(many=True)
@@ -76,9 +76,9 @@ forkliftrecords_schema = ForkliftRecordSchema(many=True)
 
 @app.route("/add-maintrecord", methods=["POST"])
 def add_maintrecord():
-    designation = request.json.get("designation")
-    model = request.json.get("model")
-    serial = request.json.get("serial")
+    datein = request.json.get("datein")
+    started = request.json.get("started")
+    completed = request.json.get("completed")
     description = request.json.get("description")
     actiontaken = request.json.get("actiontaken")
     tech = request.json.get("tech")
@@ -91,10 +91,32 @@ def add_maintrecord():
 
     return jsonify(maintrecord_schema.dump(record))
 
+@app.route("/add-forkliftrecord", methods=["POST"])
+def add_forkliftrecord():
+    designation = request.json.get("designation")
+    model = request.json.get("model")
+    serial = request.json.get("serial")
+    nickname = request.json.get("nickname")
+    fuel = request.json.get("fuel")
+    engine = request.json.get("engine")
+    
+
+    record = MaintRecords(designation, model, serial, nickname, fuel, engine)
+    
+    db.session.add(record)
+    db.session.commit()
+
+    return jsonify(forkliftrecord_schema.dump(record))
+
 @app.route("/maintrecords", methods=["GET"])
 def get_all_maintrecords():
     all_maintrecords = maintrecords.query.all()
     return jsonify(maintrecords_schema.dump(all_maintrecords))
+
+@app.route("/forkliftrecords", methods=["GET"])
+def get_all_forkliftrecords():
+    all_forkliftrecords = forkliftrecords.query.all()
+    return jsonify(forkliftrecords_schema.dump(all_forkliftrecords))
 
 @app.route("/maintrecord/<id>", methods=["DELETE","GET","PUT"])
 def maintrecord_id(id):
@@ -124,6 +146,35 @@ def maintrecord_id(id):
         return maintrecord_schema.jsonify(maintrecord)
     elif request.method == "GET":
         return maintrecord_schema.jsonify(maintrecord)
+    
+@app.route("/forkliftrecord/<id>", methods=["DELETE","GET","PUT"])
+def forkliftrecord_id(id):
+    forkliftrecord = ForkliftRecords.query.get(id)
+    if request.method == "DELETE":
+        db.session.delete(Forklikftrecord)
+        db.session.commit()
+    
+        return forkliftrecord_schema.jsonify(forkliftrecord)
+    elif request.method == "PUT":
+        designation = request.json['designation']
+        model = request.json['model']
+        serial = request.json['serial']
+        nickname = request.json['nickname']
+        fuel = request.json['fuel']
+        engine = request.json['engine']
+       
+
+        forkliftrecord.designation = designation
+        forkliftrecord.model = model
+        forkliftrecord.serial = serial
+        forkliftrecord.nickname = nickname
+        forkliftrecord.fuel = fuel
+        forkliftrecord.engine = engine
+
+        db.session.commit()
+        return forkliftrecord_schema.jsonify(forkliftrecord)
+    elif request.method == "GET":
+        return forkliftrecord_schema.jsonify(forkliftrecord)
 
 
 
